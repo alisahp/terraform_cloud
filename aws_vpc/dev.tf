@@ -13,6 +13,7 @@ module "vpc" {
 	Environment = "Dev"
 	Team = "DevOps"
 	Created_by = "Farrukh"
+	Managed_by = "Ali SaIT"
 	Department = "IT"
 	Bill = "CFO"
 	}
