@@ -1,33 +1,18 @@
-resource "aws_ami_copy" "ubuntu-xenial-encrypted-ami" {
-  name              = "ubuntu-xenial-encrypted-ami"
-  description       = "An encrypted root ami based off ${data.aws_ami.ubuntu-xenial.id}"
-  source_ami_id     = "${data.aws_ami.ubuntu-xenial.id}"
-  source_ami_region = "us-east-1"
-  encrypted         = "true"
+module "ec2_cluster" {
+  source                 = "terraform-aws-modules/ec2-instance/aws"
+  version                = "~> 2.0"
+  region                 = "us-east-1"
 
-  tags {
-    Name = "ubuntu-xenial-encrypted-ami"
+  name                   = "my-cluster"
+  instance_count         = 2
+
+  ami                    = "ami-ebd02392"
+  instance_type          = "t2.micro"
+  key_name               = "user1"
+  monitoring             = true
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
   }
-}
-
-data "aws_ami" "encrypted-ami" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu-xenial-encrypted"]
-  }
-
-  owners = ["self"]
-}
-
-data "aws_ami" "ubuntu-xenial" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
-  }
-
-  owners      = ["099720109477"]
 }
