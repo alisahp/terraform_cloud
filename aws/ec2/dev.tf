@@ -1,25 +1,33 @@
-data "aws_ami" "ubuntu" {
+resource "aws_ami_copy" "ubuntu-xenial-encrypted-ami" {
+  name              = "ubuntu-xenial-encrypted-ami"
+  description       = "An encrypted root ami based off ${data.aws_ami.ubuntu-xenial.id}"
+  source_ami_id     = "${data.aws_ami.ubuntu-xenial.id}"
+  source_ami_region = "us-east-1"
+  encrypted         = "true"
+
+  tags {
+    Name = "ubuntu-xenial-encrypted-ami"
+  }
+}
+
+data "aws_ami" "encrypted-ami" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["ubuntu-xenial-encrypted"]
   }
 
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
+  owners = ["self"]
 }
 
-resource "aws_instance" "web" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
-  region = "us-east-1"
+data "aws_ami" "ubuntu-xenial" {
+  most_recent = true
 
-  tags = {
-    Name = "HelloWorld"
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
   }
+
+  owners      = ["099720109477"]
 }
